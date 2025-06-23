@@ -1,24 +1,9 @@
 ﻿Public Class Calculator
 
     ''' <summary>
-    ''' 表示名
-    ''' </summary>
-    Private monitor As String = "0"
-
-    ''' <summary>
     ''' 計算式リスト
     ''' </summary>
     Private inputSequence As New List(Of String)()
-
-    ''' <summary>
-    ''' オールクリア
-    ''' </summary>
-    Private Const clearAll As String = "AC"
-
-    ''' <summary>
-    ''' クリア
-    ''' </summary>
-    Private Const clear As String = "C"
 
     ''' <summary>
     ''' 初期処理
@@ -100,7 +85,6 @@
     ''' <param name="sender">送信元</param>
     ''' <param name="e">イベント</param>
     Private Sub BtnOperator_Click(sender As Object, e As EventArgs) Handles BtnAdd.Click, BtnSubtract.Click, BtnMultiplication.Click, BtnDivde.Click
-
         Try
             Dim pushNumber = sender.tag.ToString()
 
@@ -167,8 +151,6 @@
     ''' <param name="e">イベント</param>
     Private Sub BtnClear_Click(sender As Object, e As EventArgs) Handles BtnClear.Click
         Try
-
-
             Dim lastIndex = inputSequence.Count - 1
 
             '入力が空なら何もしない
@@ -200,8 +182,6 @@
             Error_Screen()
             MessageBox.Show(ex.Message)
         End Try
-
-
     End Sub
 
     ''' <summary>
