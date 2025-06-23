@@ -111,7 +111,7 @@
             End If
 
             If inputSequence.Count Mod 2 = 1 Then
-                '直前が演算子の場合
+                '直前が数値の場合
                 Dim currentNum As String = inputSequence(inputSequence.Count - 1).Last()
 
                 If currentNum.Contains(".") Then
@@ -120,9 +120,9 @@
                 End If
                 inputSequence.Add(pushNumber)
             Else
-                '直前が数値の場合
-                'inputSequence(inputSequence.Count - 1) = pushNumber
-                inputSequence.Add(pushNumber)
+                '直前が演算子の場合
+                inputSequence(inputSequence.Count - 1) = pushNumber
+                'inputSequence.Add(pushNumber)
             End If
             Displaying_Screen()
         Catch ex As Exception
@@ -162,6 +162,11 @@
         End Try
     End Sub
 
+    ''' <summary>
+    ''' クリアボタン押下
+    ''' </summary>
+    ''' <param name="sender">送信元</param>
+    ''' <param name="e">イベント</param>
     Private Sub BtnClear_Click(sender As Object, e As EventArgs) Handles BtnClear.Click
         Dim lastIndex = inputSequence.Count - 1
 
@@ -172,7 +177,6 @@
 
         '最後の項目が演算子かどうかを判定
         Dim isOperator As Boolean = (lastItem = "+" OrElse lastItem = "-" OrElse lastItem = "*" OrElse lastItem = "/")
-
 
         If isOperator Then
             inputSequence.RemoveAt(lastIndex)
@@ -192,53 +196,6 @@
 
         Displaying_Screen()
     End Sub
-
-    ''' <summary>
-    ''' クリアボタン押下時
-    ''' </summary>
-    ''' <param name="sender">送信元</param>
-    ''' <param name="e">イベント</param>
-    'Private Sub BtnClear_Click(sender As Object, e As EventArgs) Handles BtnClear.Click
-    '    Try
-
-    '        Dim lastIndex = inputSequence.Count - 1
-    '        Dim lastItem = inputSequence(lastIndex)
-
-    '        If inputSequence.Count < 2 Then
-    '            '2文字以上の場合
-
-    '            If lastItem = "NaN" Then
-    '                'NaNの場合はオールクリア
-    '                inputSequence.Clear()
-    '                inputSequence.Add("0")
-    '                LblMonitor.Text = String.Join("", inputSequence)
-    '                Return
-    '            End If
-
-    '            If lastIndex >= 0 Then
-    '                If lastItem.Length > 1 Then
-    '                    inputSequence(lastIndex) = lastItem.Substring(0, lastItem.Length - 1)
-    '                Else
-    '                    inputSequence.RemoveAt(lastIndex)
-    '                End If
-    '            End If
-
-    '            If inputSequence.Count = 0 Then
-    '                inputSequence.Add("0")
-    '            End If
-    '        Else
-    '            'オールクリア
-    '            inputSequence.Clear()
-    '            inputSequence.Add("0")
-    '            LblMonitor.Text = String.Join("", inputSequence)
-    '        End If
-    '        Displaying_Screen()
-
-    '    Catch ex As Exception
-    '        Error_Screen()
-    '        MessageBox.Show(ex.Message)
-    '    End Try
-    'End Sub
 
     ''' <summary>
     ''' モニターに表示
