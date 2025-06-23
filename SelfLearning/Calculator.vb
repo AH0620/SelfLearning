@@ -50,7 +50,6 @@
                     inputSequence(inputSequence.Count - 1) = pushNumber
                 Else
                     inputSequence(inputSequence.Count - 1) &= pushNumber
-                    'inputSequence.Add(pushNumber)
                 End If
             Else
                 '直前が演算子の場合
@@ -122,7 +121,6 @@
             Else
                 '直前が演算子の場合
                 inputSequence(inputSequence.Count - 1) = pushNumber
-                'inputSequence.Add(pushNumber)
             End If
             Displaying_Screen()
         Catch ex As Exception
@@ -168,56 +166,94 @@
     ''' <param name="sender">送信元</param>
     ''' <param name="e">イベント</param>
     Private Sub BtnClear_Click(sender As Object, e As EventArgs) Handles BtnClear.Click
-        Dim lastIndex = inputSequence.Count - 1
+        Try
 
-        '入力が空なら何もしない
-        If lastIndex < 0 Then Return
 
-        Dim lastItem = inputSequence(lastIndex)
+            Dim lastIndex = inputSequence.Count - 1
 
-        '最後の項目が演算子かどうかを判定
-        Dim isOperator As Boolean = (lastItem = "+" OrElse lastItem = "-" OrElse lastItem = "*" OrElse lastItem = "/")
+            '入力が空なら何もしない
+            If lastIndex < 0 Then Return
 
-        If isOperator Then
-            inputSequence.RemoveAt(lastIndex)
-        Else
-            '文字数が2文字以上なら末尾1文字を削除
-            If lastItem.Length > 1 Then
-                inputSequence(lastIndex) = lastItem.Substring(0, lastItem.Length - 1)
-            Else
-                '1文字だけなら要素を削除
+            Dim lastItem = inputSequence(lastIndex)
+
+            '最後の項目が演算子かどうかを判定
+            Dim isOperator As Boolean = (lastItem = "+" OrElse lastItem = "-" OrElse lastItem = "*" OrElse lastItem = "/")
+
+            If isOperator Then
                 inputSequence.RemoveAt(lastIndex)
+            Else
+                '文字数が2文字以上なら末尾1文字を削除
+                If lastItem.Length > 1 Then
+                    inputSequence(lastIndex) = lastItem.Substring(0, lastItem.Length - 1)
+                Else
+                    '1文字だけなら要素を削除
+                    inputSequence.RemoveAt(lastIndex)
+                End If
             End If
-        End If
 
-        If inputSequence.Count = 0 Then
-            inputSequence.Add("0")
-        End If
+            If inputSequence.Count = 0 Then
+                inputSequence.Add("0")
+            End If
 
-        Displaying_Screen()
+            Displaying_Screen()
+        Catch ex As Exception
+            Error_Screen()
+            MessageBox.Show(ex.Message)
+        End Try
+
+
     End Sub
 
     ''' <summary>
     ''' モニターに表示
     ''' </summary>
     Private Sub Displaying_Screen()
-        Dim monitor = String.Join("", inputSequence)
-        Dim display = ""
-        For i = 0 To inputSequence.Count - 1
-            Dim item = inputSequence(i)
+        Dim display As New Text.StringBuilder()
 
-            If i Mod 2 = 0 Then
-                Dim num As Double
-                If Double.TryParse(item, num) Then
-                    item = num.ToString()
-                End If
+        For i As Integer = 0 To inputSequence.Count - 1
+            Dim inputItem As String = inputSequence(i)
+
+            If i Mod 2 = 1 Then
+                '演算子を記号変換
+                inputItem = inputItem.Replace("*", "×").Replace("/", "÷")
+                display.Append(inputItem)
+                Continue For
             End If
-            display &= item
+
+            '数値にピリオドが含まれている場合
+            If inputItem.Contains(".") Then
+
+                '小数点の位置
+                Dim dotIndex As Integer = inputItem.IndexOf(".")
+                '小数点より前の数値
+                Dim intPart As String = inputItem.Substring(0, dotIndex)
+                '小数点より後の数値
+                Dim decPart As String = inputItem.Substring(dotIndex + 1)
+
+                If IsNumeric(intPart) Then
+                    intPart = FormatNumberWithComma(intPart)
+                End If
+                inputItem = intPart & "." & decPart
+            Else
+                inputItem = FormatNumberWithComma(inputItem)
+            End If
+
+            display.Append(inputItem)
         Next
 
-        monitor = monitor.Replace("*", "×").Replace("/", "÷")
-        LblMonitor.Text = monitor
+        LblMonitor.Text = display.ToString()
     End Sub
+
+    ''' <summary>
+    ''' 数値をカンマ付きに変換
+    ''' </summary>
+    Private Function FormatNumberWithComma(value As String) As String
+        If IsNumeric(value) Then
+            Dim decValue As Decimal = Decimal.Parse(value)
+            Return decValue.ToString("#,0")
+        End If
+        Return value
+    End Function
 
     ''' <summary>
     ''' エラー字の画面処理
